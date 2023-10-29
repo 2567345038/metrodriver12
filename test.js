@@ -134,6 +134,16 @@
       }
     }
   }
+  var button = document.createElement('button');
+  button.innerHTML = '自动答题';
+  button.style.position = 'fixed';
+  button.style.top = '10px';
+  button.style.right = '10px';
+  button.style.zIndex = '9999';
+  button.onclick = function() {
+    autoAnswer();
+  };
 
-  autoAnswer();
+  // 将按钮添加到页面中
+  document.body.appendChild(button);
 })();
