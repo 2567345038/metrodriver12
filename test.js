@@ -30,12 +30,11 @@
   };
 
   // 获取题目数据
-var data;
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'https://raw.githubusercontent.com/2567345038/metrodriver12/main/Nobita.js', true);
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status === 200) {
-      data = JSON.parse(xhr.responseText);
+      var data = JSON.parse(xhr.responseText);
       autoAnswer(data);
     }
   };
