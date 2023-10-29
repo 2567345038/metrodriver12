@@ -11,35 +11,38 @@
 (function() {
   'use strict';
 
-var xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://raw.githubusercontent.com/2567345038/metrodriver12/main/Nobita.js', true);
-xhr.onreadystatechange = function() {
-  if (xhr.readyState === 4 && xhr.status === 200) {
-    var response = xhr.responseText;
-    // 处理响应数据
-    var res = response;
+  // 创建一个用于显示调试输出的div
+  var debugDiv = document.createElement('div');
+  debugDiv.style.cssText = 'position: fixed; top: 0; left: 0; background-color: #fff; color: #000; font-size: 16px; z-index: 9999; padding: 10px;';
+  document.body.appendChild(debugDiv);
+
+  // 定义一个函数，用于将调试信息输出到debugDiv
+  function debug(msg) {
+    if (debugDiv) {
+      debugDiv.innerHTML += msg + '<br>';
+    }
   }
-};
-xhr.send();
+
+  // 添加一个全局的错误处理函数，用于捕获和报告运行时错误
+  window.onerror = function (message, url, line, column, error) {
+    debug(`出错啦：${message}<br>文件：${url}<br>行号：${line}<br>列号：${column}<br>错误详情：${error}`);
+    return true; // 返回true表示阻止浏览器默认的错误处理行为
+  };
+
+  // 获取题目数据
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'https://raw.githubusercontent.com/2567345038/metrodriver12/main/Nobita.js', true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      var data = JSON.parse(xhr.responseText);
+      autoAnswer(data);
+    }
+  };
+  xhr.send();
 
   // 删除字符串中的空格、换行符和特殊字符
   function delN(s) {
-    try {
-      s = s.replace(/&nbsp;/g, '');
-    } catch (e) {}
-    try {
-      s = s.replace(/\xa0/g, '');
-    } catch (e) {}
-    try {
-      s = s.replace(/\r/g, '');
-    } catch (e) {}
-    try {
-      s = s.replace(/\n/g, '');
-    } catch (e) {}
-    try {
-      s = s.replace(/ /g, '');
-    } catch (e) {}
-    return s;
+    return s.replace(/[\s\xa0]/g, '');
   }
 
   // 获取指定字符的第二个出现位置之前的所有字符
@@ -55,19 +58,14 @@ xhr.send();
   }
 
   // 自动答题函数
-  function autoAnswer() {
-    console.log("开始答题");
-    var totalPath = "//*[@id=\"end\"]/span[1]";
-    var pNum = document.evaluate(totalPath, document, null, XPathResult.STRING_TYPE, null).stringValue;
-    console.log("总题数:", pNum);
-    for (var i = 0; i < parseInt(pNum); i++) {
-      var pidPath = "/html/body/div[2]/div[2]/div/div[2]/div[" + (4 + i) + "]/div[1]/div[1]";
-      var pall = document.evaluate(pidPath, document, null, XPathResult.STRING_TYPE, null).stringValue;
-      var pid = get_chars_before_second_occurrence(pall, "_");
-      var data = JSON.parse(res)[pid];
-      var tx = data['题型'];
-      var ans = data['ans'];
+  function autoAnswer(data) {
+    debug(`开始答题，共 ${data.length} 题`);
+    for (var i = 0; i < data.length; i++) {
+      var question = data[i];
+      var tx = question['题型'];
+      var ans = question['ans'];
       var a = 0, b = 0, c = 0, d = 0;
+
       if (tx == "判断题") {
         if (ans == "1") {
           a = 1;
@@ -76,7 +74,7 @@ xhr.send();
           b = 1;
         }
       } else {
-        var se = data['se'];
+        var se = question['se'];
         var a0 = delN(se['a']);
         var b0 = delN(se['b']);
         var c0 = delN(se['c']);
@@ -99,54 +97,48 @@ xhr.send();
           daList = daList + a0;
           ansInt = ansInt - 1;
         }
-        console.log(daList);
-        var a1Path = "/html/body/div[2]/div[2]/div/div[2]/div[" + (4 + i) + "]/div[2]/div[1]/div[2]";
-        var a2Path = "/html/body/div[2]/div[2]/div/div[2]/div[" + (4 + i) + "]/div[2]/div[2]/div[2]";
-        var a3Path = "/html/body/div[2]/div[2]/div/div[2]/div[" + (4 + i) + "]/div[2]/div[3]/div[2]";
-        var a4Path = "/html/body/div[2]/div[2]/div/div[2]/div[" + (4 + i) + "]/div[2]/div[4]/div[2]";
-        var a1 = delN(document.evaluate(a1Path, document, null, XPathResult.STRING_TYPE, null).stringValue);
-        var a2 = delN(document.evaluate(a2Path, document, null, XPathResult.STRING_TYPE, null).stringValue);
-        var a3 = delN(document.evaluate(a3Path, document, null, XPathResult.STRING_TYPE, null).stringValue);
-        var a4 = delN(document.evaluate(a4Path, document, null, XPathResult.STRING_TYPE, null).stringValue);
-        if (a1.includes(daList)) {
+        debug(daList);
+        var options = [
+          delN(document.getElementById(`${question.id}_option_0`).textContent),
+          delN(document.getElementById(`${question.id}_option_1`).textContent),
+          delN(document.getElementById(`${question.id}_option_2`).textContent),
+          delN(document.getElementById(`${question.id}_option_3`).textContent)
+        ];
+        if (options[0].includes(daList)) {
           a = 1;
         }
-        if (a2.includes(daList)) {
+        if (options[1].includes(daList)) {
           b = 1;
         }
-        if (a3.includes(daList)) {
+        if (options[2].includes(daList)) {
           c = 1;
         }
-        if (a4.includes(daList)) {
+        if (options[3].includes(daList)) {
           d = 1;
         }
       }
-      var aId = pid + "_" + (i + 1) + "_option_0_btn";
-      var bId = pid + "_" + (i + 1) + "_option_1_btn";
-      var cId = pid + "_" + (i + 1) + "_option_2_btn";
-      var dId = pid + "_" + (i + 1) + "_option_3_btn";
+
       if (a == 1) {
-        document.getElementById(aId).click();
+        document.getElementById(`${question.id}_option_0_btn`).click();
       }
       if (b == 1) {
-        document.getElementById(bId).click();
+        document.getElementById(`${question.id}_option_1_btn`).click();
       }
       if (c == 1) {
-        document.getElementById(cId).click();
+        document.getElementById(`${question.id}_option_2_btn`).click();
       }
       if (d == 1) {
-        document.getElementById(dId).click();
+        document.getElementById(`${question.id}_option_3_btn`).click();
       }
     }
   }
+
+  // 创建一个按钮，用于触发自动答题
   var button = document.createElement('button');
   button.innerHTML = '自动答题';
-  button.style.position = 'fixed';
-  button.style.top = '10px';
-  button.style.right = '10px';
-  button.style.zIndex = '9999';
+  button.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 9999;';
   button.onclick = function() {
-    autoAnswer();
+    alert('请等待题目加载完成后再点击自动答题按钮');
   };
 
   // 将按钮添加到页面中
