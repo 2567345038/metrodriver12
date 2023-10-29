@@ -138,7 +138,7 @@
   button.innerHTML = '自动答题';
   button.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 9999;';
   button.onclick = function() {
-    alert('请等待题目加载完成后再点击自动答题按钮');
+    autoAnswer();
   };
 
   // 将按钮添加到页面中
