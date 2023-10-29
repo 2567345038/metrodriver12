@@ -3,7 +3,7 @@
 // @namespace    nobita-auto-answer
 // @version      1.0
 // @description  自动答题脚本，适用于examcoo网站的在线考试平台
-// @author       Your Name
+// @author       Nobita
 // @match        https://www.examcoo.com/*
 // @grant        none
 // ==/UserScript==
