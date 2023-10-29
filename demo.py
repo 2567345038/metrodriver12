@@ -41,6 +41,15 @@ def delN(s):
         s = s
 '''
     
+def get_chars_before_second_occurrence(string, target_char):
+    first_index = string.find(target_char)  
+    second_index = string.find(target_char, first_index + 1)  
+
+    if first_index == -1 or second_index == -1:
+        return None  
+
+    return string[:second_index]  
+
 
 def Nobita():
     print("开始答题")
@@ -49,7 +58,8 @@ def Nobita():
     print("总题数:",pNum)
     for i in range(int(pNum)):
         pidPath = "/html/body/div[2]/div[2]/div/div[2]/div["+str(4+i)+"]/div[1]/div[1]"
-        pid = driver.find_element(By.XPATH,pidPath).get_attribute('id')[:21]
+        pall = driver.find_element(By.XPATH,pidPath).get_attribute('id')
+        pid = get_chars_before_second_occurrence(pall,"_")
         with open("Nobita.json","r",encoding="utf-8") as file:
             da = json.load(file)
         dat = da[pid]
