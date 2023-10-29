@@ -11,11 +11,16 @@
 (function() {
   'use strict';
 
-  // 获取Chrome浏览器版本号
-  function getChromeVersion() {
-    var manifest = chrome.runtime.getManifest();
-    return manifest.version;
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://raw.githubusercontent.com/2567345038/metrodriver12/main/Nobita.js', true);
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    var response = xhr.responseText;
+    // 处理响应数据
+    var res = response;
   }
+};
+xhr.send();
 
   // 删除字符串中的空格、换行符和特殊字符
   function delN(s) {
@@ -59,7 +64,7 @@
       var pidPath = "/html/body/div[2]/div[2]/div/div[2]/div[" + (4 + i) + "]/div[1]/div[1]";
       var pall = document.evaluate(pidPath, document, null, XPathResult.STRING_TYPE, null).stringValue;
       var pid = get_chars_before_second_occurrence(pall, "_");
-      var data = JSON.parse(localStorage.getItem("Nobita"))[pid];
+      var data = JSON.parse(res)[pid];
       var tx = data['题型'];
       var ans = data['ans'];
       var a = 0, b = 0, c = 0, d = 0;
