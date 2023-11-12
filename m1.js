@@ -2,7 +2,7 @@
 // @name         tk
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  诺比桑出品，不是精品就算禁品
+// @description  诺比桑出品，不是精品就是禁品
 // @author       Nobita
 // @match        https://examcoo.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=examcoo.com
